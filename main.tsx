@@ -4,6 +4,9 @@ class MyComponent {
     
 }
 
-let a = <div name="a" />
+let a = <div name="a" id="labelname">
+           <span></span>
+           <span></span>
+        </div>
 
 ToyReact.createElement();

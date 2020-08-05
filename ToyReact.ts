@@ -1,4 +1,7 @@
 export let ToyReact = {
-    createElement(){
+    createElement(type?: any, ...attributes: any[]){
+        console.log(type);
+        console.log(attributes);
+        debugger;
     }
 }
