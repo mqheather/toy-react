@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as webpack from 'webpack';
 import * as webpackDevServer from 'webpack-dev-server'
 import { resolve } from 'path';
-const HtmlWebPackPlugin = require( 'html-webpack-plugin' );
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 interface Configuration extends webpack.Configuration {
   devServer?: webpackDevServer.Configuration;
@@ -19,7 +20,8 @@ const config: webpack.Configuration = {
   },
 
   plugins: [
-      new HtmlWebPackPlugin()
+      new HtmlWebPackPlugin(),
+      new MiniCssExtractPlugin()
   ],
 
   resolve: { 
@@ -35,7 +37,11 @@ const config: webpack.Configuration = {
         use: {
           loader: 'babel-loader'
         },
-      }
+      },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
     ]
   },
   devServer: {

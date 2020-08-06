@@ -4,6 +4,9 @@ class ElementWrapper {
         this.root = document.createElement(type);
     }
     setAttribute(name, value) {
+        if(name.match(/^on([\s\S]+)$/)) {
+            console.log(RegExp.$1);
+        }
         this.root.setAttribute(name, value);
     }
 
@@ -28,12 +31,15 @@ class TextWrapper {
 
 export abstract class Component {
     children: any[]
+    props: Object;
     constructor() {
         this.children = [];
+        this.props = Object.create(null);
     }
     abstract render()
 
     setAttribute(name, value) {
+        this.props[name] = value;
         this[name] = value;
     }
     mountTo(parent){
