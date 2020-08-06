@@ -40,7 +40,7 @@ const config: webpack.Configuration = {
   },
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
-    port: 9000,
+    port: 8080,
     watchContentBase: true,
     publicPath: '/dist/',
     hot: true
