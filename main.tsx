@@ -1,15 +1,21 @@
 import {ToyReact, Component} from './ToyReact'
 import './main.css'
 
-class Square extends Component {
-    render() {
-        return (
-            <button className="square"
-                    onClick={()=>alert('click')}>
-            {this.props.value}
-            </button>
-        );
-    }
+class Square extends Component {ßß
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: null,
+    };
+  }
+  render() {
+      return (
+          <button className="square"
+          onClick={() => this.setState({value: 'X'})}>
+          {this.state.vaule ? this.state.value: ""}
+          </button>
+      );
+  }
 }
 
 class Board extends Component {

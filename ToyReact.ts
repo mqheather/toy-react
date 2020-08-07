@@ -4,18 +4,36 @@ class ElementWrapper {
         this.root = document.createElement(type);
     }
     setAttribute(name, value) {
+        // \s\S represent all string
         if(name.match(/^on([\s\S]+)$/)) {
-            console.log(RegExp.$1);
+            let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLocaleLowerCase());
+            this.root.addEventListener(eventName, value);
+        }
+
+        if (name === "className") {
+            name = "class";
         }
         this.root.setAttribute(name, value);
     }
 
     appendChild(vChild) {
-        vChild.mountTo(this.root);
+
+        let range = document.createRange();
+        if (this.root.children.length){
+            range.setStartAfter(this.root.lastChild);
+            range.setEndAfter(this.root.lastChild);
+        }
+        else {
+            range.setStart(this.root, 0);
+            range.setEnd(this.root, 0);
+        }
+        
+        vChild.mountTo(range);
     }
 
-    mountTo(parent) {
-        parent.appendChild(this.root);
+    mountTo(range) {
+        range.deleteContents();
+        range.insertNode(this.root);
     }
 }
 
@@ -24,17 +42,25 @@ class TextWrapper {
     constructor(content) {
         this.root = document.createTextNode(content);
     }
-    mountTo(parent) {
-        parent.appendChild(this.root);
+    mountTo(range) {
+        range.deleteContents();
+        range.insertNode(this.root);
     }
 }
 
 export abstract class Component {
     children: any[]
     props: Object;
-    constructor() {
+    state: any;
+    range: any;
+    constructor(props) {
         this.children = [];
-        this.props = Object.create(null);
+        if (typeof props === "object") {
+
+        }
+        else {
+            this.props = Object.create(null);
+        }
     }
     abstract render()
 
@@ -42,13 +68,40 @@ export abstract class Component {
         this.props[name] = value;
         this[name] = value;
     }
-    mountTo(parent){
+    mountTo(range){
+        this.range = range;
+        this.update();
+    }
+
+    update() {
+        this.range.deleteContents();
         let vdom = this.render();
-        vdom.mountTo(parent);
+        vdom.mountTo(this.range);
     }
 
     appendChild(vChild) {
         this.children.push(vChild);
+    }
+
+    setState(state) {
+        let merge = (oldState, newState) => {
+            for (let key of Object.keys(newState))  {
+                if (typeof newState[key] === "object") {
+                    if (typeof oldState[key] !== "object") {
+                        oldState[key] = {}
+                    }
+                    merge(oldState[key], newState[key]);
+                }
+                else {
+                    oldState[key] = newState[key];
+                }
+            }
+        }
+        if (!this.state && state){
+            this.state = {};
+        }
+        merge(this.state, state);
+        this.update();
     }
 }
 
@@ -92,7 +145,17 @@ export let ToyReact = {
     },
 
     render(vdom, element) {
-        vdom.mountTo(element);
+        let range = document.createRange();
+        if (element.children.length){
+            range.setStartAfter(element.lastChild);
+            range.setEndAfter(element.lastChild);
+        }
+        else {
+            range.setStart(element, 0);
+            range.setEnd(element, 0);
+        }
+        
+        vdom.mountTo(range);
     },
     name: "Heather"
 }
