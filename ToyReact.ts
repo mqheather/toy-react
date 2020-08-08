@@ -65,6 +65,11 @@ export abstract class Component {
     abstract render()
 
     setAttribute(name, value) {
+        // \s\S represent all string
+        if(name.match(/^on([\s\S]+)$/)) {
+            console.log(RegExp.$1)
+        }
+
         this.props[name] = value;
         this[name] = value;
     }
@@ -74,9 +79,17 @@ export abstract class Component {
     }
 
     update() {
+        let placeholder = document.createComment("placeholder");
+        let range = document.createRange();
+        range.setStart(this.range.endContainer, this.range.endOffset);
+        range.setEnd(this.range.endContainer, this.range.endOffset);
+        range.insertNode(placeholder);
+
         this.range.deleteContents();
         let vdom = this.render();
         vdom.mountTo(this.range);
+
+        //placeholder.parentElement.removeChild(placeholder);
     }
 
     appendChild(vChild) {
@@ -101,6 +114,7 @@ export abstract class Component {
             this.state = {};
         }
         merge(this.state, state);
+        console.log(this.state);
         this.update();
     }
 }
